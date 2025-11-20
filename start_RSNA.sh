@@ -3,7 +3,7 @@
 ##                                                    RSNA
 ## -------------------------------------------------------------------------------------------------------
 # | exp 1 | pointDETR baseline | data=5p/10p/20p/30p/40p | train: instances_trainBox.json, test: instances_val.json |
-partial=2
+partial=20
 OMP_NUM_THREADS=8 python3.6 main.py \
     --epochs 111 \
     --lr_backbone 1e-5 \

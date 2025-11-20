@@ -25,7 +25,7 @@ class CocoDetection(torchvision.datasets.CocoDetection):
 
         if args.generate_pseudo_bbox: # gen pseudo
             assert not is_training and args.partial != 0, ' ERROR: The data scale must be specified.'
-            self.coco = COCO('/YOURPATH/data/RSNA/cocoAnn/100p/instances_trainBox.json')
+            self.coco = COCO('/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/100p/instances_trainBox.json')
             self.ids = list(self.coco.imgs.keys())
             N = int(len(self.ids) * args.partial / 100)
             self.ids = self.ids[N:]
@@ -35,7 +35,7 @@ class CocoDetection(torchvision.datasets.CocoDetection):
             # point data
             if args.train_with_unlabel_imgs and image_set == 'train':
                 print('=====> training with unlabeled imgs (point annotation)')
-                all_box_anns = '/YOURPATH/data/RSNA/cocoAnn/100p/instances_trainBox.json'
+                all_box_anns = '/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/100p/instances_trainBox.json'
                 self.all_anns = COCO(all_box_anns)
                 print('=====>', all_box_anns)
                 self.ids_all_anns = list(set(list(sorted(self.all_anns.imgs.keys()))))
@@ -253,8 +253,8 @@ def build(image_set, args):
     assert root.exists(), f'provided COCO path {root} does not exist'
 
     PATHS = {
-        "train": ('/YOURPATH/data/RSNA/RSNA_jpg', root/ 'instances_trainBox.json'),
-        "val": ('/YOURPATH/data/RSNA/RSNA_jpg', root/ '../instances_val.json'),
+        "train": ('/data/sundeep/Point-Beyond-Class/data/RSNA/RSNA_jpg', root/ 'instances_trainBox.json'),
+        "val": ('/data/sundeep/Point-Beyond-Class/data/RSNA/RSNA_jpg', root/ '../instances_val.json'),
     }
     img_folder, ann_file = PATHS[image_set]
     print('dataset path: \n', ann_file)

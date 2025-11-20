@@ -51,58 +51,67 @@ model = dict(
             reg_class_agnostic=False,
             loss_cls=dict(
                 type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0),
-            loss_bbox=dict(type='L1Loss', loss_weight=1.0))),
-    train_cfg=dict(
-        rpn=dict(
-            assigner=dict(
-                type='MaxIoUAssigner',
-                pos_iou_thr=0.7,
-                neg_iou_thr=0.3,
-                min_pos_iou=0.3,
-                match_low_quality=True,
-                ignore_iof_thr=-1),
-            sampler=dict(
-                type='RandomSampler',
-                num=256,
-                pos_fraction=0.5,
-                neg_pos_ub=-1,
-                add_gt_as_proposals=False),
-            allowed_border=-1,
-            pos_weight=-1,
-            debug=False),
-        rpn_proposal=dict(
-            nms_pre=2000,
-            max_per_img=1000,
-            nms=dict(type='nms', iou_threshold=0.7),
-            min_bbox_size=0),
-        rcnn=dict(
-            assigner=dict(
-                type='MaxIoUAssigner',
-                pos_iou_thr=0.5,
-                neg_iou_thr=0.5,
-                min_pos_iou=0.5,
-                match_low_quality=False,
-                ignore_iof_thr=-1),
-            sampler=dict(
-                type='RandomSampler',
-                num=512,
-                pos_fraction=0.25,
-                neg_pos_ub=-1,
-                add_gt_as_proposals=True),
-            pos_weight=-1,
-            debug=False)),
-    test_cfg=dict(
-        rpn=dict(
-            nms_pre=1000,
-            max_per_img=1000,
-            nms=dict(type='nms', iou_threshold=0.7),
-            min_bbox_size=0),
-        rcnn=dict(
-            score_thr=0.05,
-            nms=dict(type='nms', iou_threshold=0.5),
-            max_per_img=100)))
+            loss_bbox=dict(type='L1Loss', loss_weight=1.0)))
+)
 
-data_root = '/YOURPATH/data/RSNA/gt_and_pseudo/'
+train_cfg = dict(
+    rpn=dict(
+        assigner=dict(
+            type='MaxIoUAssigner',
+            pos_iou_thr=0.7,
+            neg_iou_thr=0.3,
+            min_pos_iou=0.3,
+            match_low_quality=True,
+            ignore_iof_thr=-1),
+        sampler=dict(
+            type='RandomSampler',
+            num=256,
+            pos_fraction=0.5,
+            neg_pos_ub=-1,
+            add_gt_as_proposals=False),
+        allowed_border=-1,
+        pos_weight=-1,
+        debug=False),
+    rpn_proposal=dict(
+        nms_across_levels=False,
+        nms_pre=2000,
+        nms_post=1000,
+        max_num=1000,
+        nms_thr=0.7,
+        min_bbox_size=0),
+    rcnn=dict(
+        assigner=dict(
+            type='MaxIoUAssigner',
+            pos_iou_thr=0.5,
+            neg_iou_thr=0.5,
+            min_pos_iou=0.5,
+            match_low_quality=True,
+            ignore_iof_thr=-1),
+        sampler=dict(
+            type='RandomSampler',
+            num=512,
+            pos_fraction=0.25,
+            neg_pos_ub=-1,
+            add_gt_as_proposals=True),
+        pos_weight=-1,
+        debug=False)
+)
+
+test_cfg = dict(
+    rpn=dict(
+        nms_across_levels=False,
+        nms_pre=1000,
+        nms_post=1000,
+        max_num=1000,
+        nms_thr=0.7,
+        min_bbox_size=0),
+    rcnn=dict(
+        score_thr=0.05,
+        nms=dict(type='nms', iou_threshold=0.5),
+        max_per_img=100)
+)
+
+data_root = '/data/sundeep/Point-Beyond-Class/data/RSNA/gt_and_pseudo/'
 Class = ('pneumonia',)
 
 
@@ -146,28 +155,28 @@ data = dict(
     workers_per_gpu=16,
     train=dict(
         type='CocoDataset',
-        # ------------------------------------- only box 5p/10p/20p/30p/40p/50p -------------------------------------
-        ann_file='/YOURPATH/data/RSNA/cocoAnn/20p/instances_trainBox.json',
+        # # ------------------------------------- only box 5p/10p/20p/30p/40p/50p -------------------------------------
+        # ann_file='/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/20p/instances_trainBox.json',
 
-        # --------------------------- 5p/10p/20p/30p/40p/50p + pseudo, baseline --------------------------
+        # #--------------------------- 5p/10p/20p/30p/40p/50p + pseudo, baseline --------------------------
         # ann_file=data_root + 'train_LableBox_PseudoBox__exp1_stage1_data20p_baseline.json',
 
-        # --------------------------- 10p/20p/30p/40p/50p + pseudo, unlabel load 2ptCons --------------------------
-        # ann_file=data_root + 'train_LableBox_PseudoBox__exp4_stage1_data20p_1pts_Erase20_jit005_unlabelLossL2Loss50_Load2ptsconsPth.json',
+        #--------------------------- 10p/20p/30p/40p/50p + pseudo, unlabel load 2ptCons --------------------------
+        ann_file=data_root + 'train_LableBox_PseudoBox__exp4_stage1_data20p_1pts_Erase20_jit005_unlabelLossL2Loss50_Load2ptsconsPth.json',
 
-        img_prefix='/YOURPATH/data/RSNA/RSNA_jpg/',
+        img_prefix='/data/sundeep/Point-Beyond-Class/data/RSNA/RSNA_jpg/',
         classes=Class,
         pipeline=train_pipeline),
     val=dict(
         type='CocoDataset',
-        ann_file='/YOURPATH/data/RSNA/cocoAnn/instances_val.json',
-        img_prefix='/YOURPATH/data/RSNA/RSNA_jpg/',
+        ann_file='/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/instances_val.json',
+        img_prefix='/data/sundeep/Point-Beyond-Class/data/RSNA/RSNA_jpg/',
         classes=Class,
         pipeline=test_pipeline),
     test=dict(
         type='CocoDataset',
-        ann_file='/YOURPATH/data/RSNA/cocoAnn/instances_val.json',
-        img_prefix='/YOURPATH/data/RSNA/RSNA_jpg/',
+        ann_file='/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/instances_val.json',
+        img_prefix='/data/sundeep/Point-Beyond-Class/data/RSNA/RSNA_jpg/',
         classes=Class,
         pipeline=test_pipeline))
 evaluation = dict(interval=1, metric='bbox')
@@ -180,9 +189,10 @@ lr_config = dict(
     warmup_ratio=0.001,
     step=[8, 11])
 runner = dict(type='EpochBasedRunner', max_epochs=12)
+total_epochs = runner['max_epochs']
 checkpoint_config = dict(interval=1)
 log_config = dict(interval=50, hooks=[dict(type='TextLoggerHook')])
-custom_hooks = [dict(type='NumClassCheckHook')]
+custom_hooks = []
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = None

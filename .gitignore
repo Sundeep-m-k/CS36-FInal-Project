@@ -1,0 +1,83 @@
+# ============================
+# DATASETS (Do NOT track)
+# ============================
+data/
+dataset/
+raw_data/
+raw/
+images/
+imgs/
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tiff
+*.dicom
+*.dcm
+*.nii
+*.nii.gz
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.csv
+*.tsv
+*.jsonl
+
+# ============================
+# PYTORCH / TENSORFLOW CHECKPOINTS
+# ============================
+*.ckpt
+*.pth
+*.pt
+*.bin
+*.h5
+*.pb
+*.tflite
+checkpoints/
+weights/
+logs/
+runs/
+
+# ============================
+# CACHE / TEMP FILES
+# ============================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.cache/
+.cache/
+.cache
+.ipynb_checkpoints/
+tmp/
+temp/
+*.tmp
+
+# ============================
+# ENVIRONMENTS
+# ============================
+env/
+venv/
+.venv/
+conda/
+*.env
+
+# ============================
+# VS CODE
+# ============================
+.vscode/
+*.code-workspace
+
+# ============================
+# SYSTEM FILES
+# ============================
+.DS_Store
+Thumbs.db
+
+# ============================
+# JUPYTER NOTEBOOK OUTPUTS
+# ============================
+*.nbconvert/
+student/mmdetection/
