@@ -51,9 +51,7 @@ model = dict(
             reg_class_agnostic=False,
             loss_cls=dict(
                 type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0),
-            loss_bbox=dict(type='L1Loss', loss_weight=1.0)))
-)
-
+            loss_bbox=dict(type='L1Loss', loss_weight=1.0))))
 train_cfg = dict(
     rpn=dict(
         assigner=dict(
@@ -94,9 +92,7 @@ train_cfg = dict(
             neg_pos_ub=-1,
             add_gt_as_proposals=True),
         pos_weight=-1,
-        debug=False)
-)
-
+        debug=False))
 test_cfg = dict(
     rpn=dict(
         nms_across_levels=False,
@@ -108,13 +104,9 @@ test_cfg = dict(
     rcnn=dict(
         score_thr=0.05,
         nms=dict(type='nms', iou_threshold=0.5),
-        max_per_img=100)
-)
-
+        max_per_img=100))
 data_root = '/data/sundeep/Point-Beyond-Class/data/RSNA/gt_and_pseudo/'
-Class = ('pneumonia',)
-
-
+Class = ('pneumonia', )
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
@@ -155,30 +147,74 @@ data = dict(
     workers_per_gpu=16,
     train=dict(
         type='CocoDataset',
-        # # ------------------------------------- only box 5p/10p/20p/30p/40p/50p -------------------------------------
-        # ann_file='/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/20p/instances_trainBox.json',
-
-        # #--------------------------- 5p/10p/20p/30p/40p/50p + pseudo, baseline --------------------------
-        # ann_file=data_root + 'train_LableBox_PseudoBox__exp1_stage1_data20p_baseline.json',
-
-        #--------------------------- 10p/20p/30p/40p/50p + pseudo, unlabel load 2ptCons --------------------------
-        ann_file=data_root + 'train_LableBox_PseudoBox__exp4_stage1_data50p_1pts_Erase20_jit005_unlabelLossL2Loss200_Load2ptsconsPth.json',
-
+        ann_file=
+        '/data/sundeep/Point-Beyond-Class/data/RSNA/gt_and_pseudo/train_LableBox_PseudoBox__exp4_stage1_data50p_1pts_Erase20_jit005_unlabelLossL2Loss200_Load2ptsconsPth.json',
         img_prefix='/data/sundeep/Point-Beyond-Class/data/RSNA/RSNA_jpg/',
-        classes=Class,
-        pipeline=train_pipeline),
+        classes=('pneumonia', ),
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True),
+            dict(type='Resize', img_scale=(512, 512), keep_ratio=False),
+            dict(type='RandomFlip', flip_ratio=0.5),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
+        ]),
     val=dict(
         type='CocoDataset',
-        ann_file='/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/instances_val.json',
+        ann_file=
+        '/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/instances_val.json',
         img_prefix='/data/sundeep/Point-Beyond-Class/data/RSNA/RSNA_jpg/',
-        classes=Class,
-        pipeline=test_pipeline),
+        classes=('pneumonia', ),
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(512, 512),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=False),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(type='Pad', size_divisor=32),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ]),
     test=dict(
         type='CocoDataset',
-        ann_file='/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/instances_val.json',
+        ann_file=
+        '/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/instances_val.json',
         img_prefix='/data/sundeep/Point-Beyond-Class/data/RSNA/RSNA_jpg/',
-        classes=Class,
-        pipeline=test_pipeline))
+        classes=('pneumonia', ),
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(512, 512),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=False),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(type='Pad', size_divisor=32),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ]))
 evaluation = dict(interval=1, metric='bbox')
 optimizer = dict(type='SGD', lr=0.5, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=None)
@@ -189,7 +225,7 @@ lr_config = dict(
     warmup_ratio=0.001,
     step=[8, 11])
 runner = dict(type='EpochBasedRunner', max_epochs=12)
-total_epochs = runner['max_epochs']
+total_epochs = 12
 checkpoint_config = dict(interval=1)
 log_config = dict(interval=50, hooks=[dict(type='TextLoggerHook')])
 custom_hooks = []
@@ -198,5 +234,5 @@ log_level = 'INFO'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
-work_dir = './work_dirs/faster_rcnn_r50_fpn_1x_coco'
+work_dir = '/data/sundeep/Point-Beyond-Class/Output/outfiles/models/mmdet-RSNA/exp2_faster512noBB_50p_PBC'
 gpu_ids = range(0, 1)

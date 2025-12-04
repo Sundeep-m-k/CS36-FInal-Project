@@ -1,0 +1,346 @@
+2025-11-22 06:51:49,850 - mmdet - INFO - Environment info:
+------------------------------------------------------------
+sys.platform: linux
+Python: 3.8.20 | packaged by conda-forge | (default, Sep 30 2024, 17:52:49) [GCC 13.3.0]
+CUDA available: True
+GPU 0: NVIDIA RTX A6000
+CUDA_HOME: /usr/local/cuda
+NVCC: Build cuda_12.6.r12.6/compiler.34714021_0
+GCC: gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
+PyTorch: 1.7.1+cu110
+PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v1.6.0 (Git Hash 5ef631a030a6f73131c77892041042805a06064f)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.0
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80
+  - CuDNN 8.0.5
+  - Magma 2.5.2
+  - Build settings: BLAS=MKL, BUILD_TYPE=Release, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DUSE_VULKAN_WRAPPER -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, USE_CUDA=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, 
+
+TorchVision: 0.8.2+cu110
+OpenCV: 4.10.0
+MMCV: 1.2.7
+MMCV Compiler: GCC 7.3
+MMCV CUDA Compiler: 11.0
+MMDetection: 2.8.0+85b8696
+------------------------------------------------------------
+
+2025-11-22 06:51:50,315 - mmdet - INFO - Distributed training: False
+2025-11-22 06:51:50,772 - mmdet - INFO - Config:
+data_root = '/data/sundeep/Point-Beyond-Class/data/RSNA/gt_and_pseudo/'
+img_norm_cfg = dict(
+    mean=[102.9801, 115.9465, 122.7717], std=[1.0, 1.0, 1.0], to_rgb=False)
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='LoadAnnotations', with_bbox=True),
+    dict(type='Resize', img_scale=(512, 512), keep_ratio=False),
+    dict(type='RandomFlip', flip_ratio=0.5),
+    dict(
+        type='Normalize',
+        mean=[102.9801, 115.9465, 122.7717],
+        std=[1.0, 1.0, 1.0],
+        to_rgb=False),
+    dict(type='Pad', size_divisor=32),
+    dict(type='DefaultFormatBundle'),
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
+]
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=(512, 512),
+        flip=False,
+        transforms=[
+            dict(type='Resize', keep_ratio=False),
+            dict(type='RandomFlip'),
+            dict(
+                type='Normalize',
+                mean=[102.9801, 115.9465, 122.7717],
+                std=[1.0, 1.0, 1.0],
+                to_rgb=False),
+            dict(type='Pad', size_divisor=32),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img'])
+        ])
+]
+data = dict(
+    samples_per_gpu=16,
+    workers_per_gpu=16,
+    train=dict(
+        type='CocoDataset',
+        ann_file=
+        '/data/sundeep/Point-Beyond-Class/data/RSNA/gt_and_pseudo/train_LableBox_PseudoBox__exp1_stage1_data20p_baseline.json',
+        img_prefix='/data/sundeep/Point-Beyond-Class/data/RSNA/RSNA_jpg/',
+        classes=('pneumonia', ),
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True),
+            dict(type='Resize', img_scale=(512, 512), keep_ratio=False),
+            dict(type='RandomFlip', flip_ratio=0.5),
+            dict(
+                type='Normalize',
+                mean=[102.9801, 115.9465, 122.7717],
+                std=[1.0, 1.0, 1.0],
+                to_rgb=False),
+            dict(type='Pad', size_divisor=32),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
+        ]),
+    val=dict(
+        type='CocoDataset',
+        ann_file=
+        '/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/instances_val.json',
+        img_prefix='/data/sundeep/Point-Beyond-Class/data/RSNA/RSNA_jpg/',
+        classes=('pneumonia', ),
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(512, 512),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=False),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[102.9801, 115.9465, 122.7717],
+                        std=[1.0, 1.0, 1.0],
+                        to_rgb=False),
+                    dict(type='Pad', size_divisor=32),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ]),
+    test=dict(
+        type='CocoDataset',
+        ann_file=
+        '/data/sundeep/Point-Beyond-Class/data/RSNA/cocoAnn/instances_val.json',
+        img_prefix='/data/sundeep/Point-Beyond-Class/data/RSNA/RSNA_jpg/',
+        classes=('pneumonia', ),
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(512, 512),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=False),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[102.9801, 115.9465, 122.7717],
+                        std=[1.0, 1.0, 1.0],
+                        to_rgb=False),
+                    dict(type='Pad', size_divisor=32),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ]))
+evaluation = dict(interval=1, metric='bbox')
+optimizer = dict(
+    type='SGD',
+    lr=0.01,
+    momentum=0.9,
+    weight_decay=0.0001,
+    paramwise_cfg=dict(bias_lr_mult=2.0, bias_decay_mult=0.0))
+optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
+lr_config = dict(
+    policy='step',
+    warmup='constant',
+    warmup_iters=500,
+    warmup_ratio=0.3333333333333333,
+    step=[8, 11])
+runner = dict(type='EpochBasedRunner', max_epochs=12)
+total_epochs = 12
+checkpoint_config = dict(interval=1)
+log_config = dict(interval=50, hooks=[dict(type='TextLoggerHook')])
+custom_hooks = []
+dist_params = dict(backend='nccl')
+log_level = 'INFO'
+load_from = None
+resume_from = None
+workflow = [('train', 1)]
+model = dict(
+    type='FCOS',
+    pretrained=None,
+    backbone=dict(
+        type='ResNet',
+        depth=50,
+        num_stages=4,
+        out_indices=(0, 1, 2, 3),
+        frozen_stages=1,
+        norm_cfg=dict(type='BN', requires_grad=False),
+        norm_eval=True,
+        style='caffe'),
+    neck=dict(
+        type='FPN',
+        in_channels=[256, 512, 1024, 2048],
+        out_channels=256,
+        start_level=1,
+        add_extra_convs=True,
+        extra_convs_on_inputs=False,
+        num_outs=5,
+        relu_before_extra_convs=True),
+    bbox_head=dict(
+        type='FCOSHead',
+        num_classes=1,
+        in_channels=256,
+        stacked_convs=4,
+        feat_channels=256,
+        strides=[8, 16, 32, 64, 128],
+        loss_cls=dict(
+            type='FocalLoss',
+            use_sigmoid=True,
+            gamma=2.0,
+            alpha=0.25,
+            loss_weight=1.0),
+        loss_bbox=dict(type='IoULoss', loss_weight=1.0),
+        loss_centerness=dict(
+            type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0)),
+    train_cfg=dict(
+        assigner=dict(
+            type='MaxIoUAssigner',
+            pos_iou_thr=0.5,
+            neg_iou_thr=0.4,
+            min_pos_iou=0,
+            ignore_iof_thr=-1),
+        allowed_border=-1,
+        pos_weight=-1,
+        debug=False),
+    test_cfg=dict(
+        nms_pre=1000,
+        min_bbox_size=0,
+        score_thr=0.05,
+        nms=dict(type='nms', iou_threshold=0.5),
+        max_per_img=100))
+work_dir = '/data/sundeep/Point-Beyond-Class/Output/outfiles/models/mmdet-RSNA/exp2_fcos512noBB_20p__train_LableBox_PseudoBox__exp1_stage1_data20p_baseline'
+gpu_ids = range(0, 1)
+
+2025-11-22 06:51:50,772 - mmdet - INFO - Set random seed to 42, deterministic: True
+2025-11-22 06:51:53,958 - mmdet - INFO - Start running, host: sundeep@skanda, work_dir: /data/sundeep/Point-Beyond-Class/Output/outfiles/models/mmdet-RSNA/exp2_fcos512noBB_20p__train_LableBox_PseudoBox__exp1_stage1_data20p_baseline
+2025-11-22 06:51:53,958 - mmdet - INFO - workflow: [('train', 1)], max: 12 epochs
+2025-11-22 06:52:18,606 - mmdet - INFO - Epoch [1][50/301]	lr: 3.333e-03, eta: 0:29:15, time: 0.493, data_time: 0.081, memory: 5425, loss_cls: 0.5770, loss_bbox: 2.0562, loss_centerness: 0.6542, loss: 3.2875, grad_norm: 22.7496
+2025-11-22 06:52:39,992 - mmdet - INFO - Epoch [1][100/301]	lr: 3.333e-03, eta: 0:26:56, time: 0.428, data_time: 0.015, memory: 5425, loss_cls: 0.3686, loss_bbox: 0.8046, loss_centerness: 0.6499, loss: 1.8231, grad_norm: 5.4784
+2025-11-22 06:53:01,601 - mmdet - INFO - Epoch [1][150/301]	lr: 3.333e-03, eta: 0:26:01, time: 0.432, data_time: 0.016, memory: 5425, loss_cls: 0.3449, loss_bbox: 0.7090, loss_centerness: 0.6488, loss: 1.7027, grad_norm: 4.0255
+2025-11-22 06:53:23,362 - mmdet - INFO - Epoch [1][200/301]	lr: 3.333e-03, eta: 0:25:25, time: 0.435, data_time: 0.016, memory: 5425, loss_cls: 0.3407, loss_bbox: 0.7015, loss_centerness: 0.6458, loss: 1.6880, grad_norm: 4.8643
+2025-11-22 06:53:45,279 - mmdet - INFO - Epoch [1][250/301]	lr: 3.333e-03, eta: 0:24:57, time: 0.438, data_time: 0.016, memory: 5425, loss_cls: 0.3492, loss_bbox: 0.6815, loss_centerness: 0.6444, loss: 1.6751, grad_norm: 5.0984
+2025-11-22 06:54:07,228 - mmdet - INFO - Epoch [1][300/301]	lr: 3.333e-03, eta: 0:24:31, time: 0.439, data_time: 0.015, memory: 5425, loss_cls: 0.3354, loss_bbox: 0.6587, loss_centerness: 0.6430, loss: 1.6371, grad_norm: 4.1849
+2025-11-22 06:54:07,799 - mmdet - INFO - Saving checkpoint at 1 epochs
+2025-11-22 06:54:42,218 - mmdet - INFO - Evaluating bbox...
+2025-11-22 06:54:44,239 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 06:54:44,239 - mmdet - INFO - Epoch(val) [1][301]	bbox_mAP: 0.0480, bbox_mAP_50: 0.1890, bbox_mAP_75: 0.0040, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0490, bbox_mAP_copypaste: 0.048 0.189 0.004 -1.000 0.000 0.049
+2025-11-22 06:55:10,089 - mmdet - INFO - Epoch [2][50/301]	lr: 3.333e-03, eta: 0:24:38, time: 0.517, data_time: 0.082, memory: 5425, loss_cls: 0.3316, loss_bbox: 0.6472, loss_centerness: 0.6436, loss: 1.6224, grad_norm: 5.1920
+2025-11-22 06:55:37,167 - mmdet - INFO - Epoch [2][100/301]	lr: 3.333e-03, eta: 0:24:50, time: 0.542, data_time: 0.016, memory: 5425, loss_cls: 0.3276, loss_bbox: 0.6554, loss_centerness: 0.6415, loss: 1.6245, grad_norm: 5.3061
+2025-11-22 06:55:59,358 - mmdet - INFO - Epoch [2][150/301]	lr: 3.333e-03, eta: 0:24:20, time: 0.444, data_time: 0.016, memory: 5425, loss_cls: 0.3227, loss_bbox: 0.6491, loss_centerness: 0.6407, loss: 1.6125, grad_norm: 4.9069
+2025-11-22 06:56:21,611 - mmdet - INFO - Epoch [2][200/301]	lr: 1.000e-02, eta: 0:23:52, time: 0.445, data_time: 0.017, memory: 5425, loss_cls: 0.3283, loss_bbox: 0.6677, loss_centerness: 0.6416, loss: 1.6376, grad_norm: 5.5917
+2025-11-22 06:56:43,768 - mmdet - INFO - Epoch [2][250/301]	lr: 1.000e-02, eta: 0:23:24, time: 0.443, data_time: 0.016, memory: 5425, loss_cls: 0.3324, loss_bbox: 0.8095, loss_centerness: 0.6481, loss: 1.7900, grad_norm: 6.7853
+2025-11-22 06:57:05,931 - mmdet - INFO - Epoch [2][300/301]	lr: 1.000e-02, eta: 0:22:57, time: 0.443, data_time: 0.015, memory: 5425, loss_cls: 0.3266, loss_bbox: 0.7124, loss_centerness: 0.6420, loss: 1.6811, grad_norm: 5.9445
+2025-11-22 06:57:06,513 - mmdet - INFO - Saving checkpoint at 2 epochs
+2025-11-22 06:57:41,348 - mmdet - INFO - Evaluating bbox...
+2025-11-22 06:57:44,405 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 06:57:44,405 - mmdet - INFO - Epoch(val) [2][301]	bbox_mAP: 0.0400, bbox_mAP_50: 0.1880, bbox_mAP_75: 0.0020, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0410, bbox_mAP_copypaste: 0.040 0.188 0.002 -1.000 0.000 0.041
+2025-11-22 06:58:09,586 - mmdet - INFO - Epoch [3][50/301]	lr: 1.000e-02, eta: 0:22:42, time: 0.503, data_time: 0.080, memory: 5425, loss_cls: 0.3431, loss_bbox: 0.7486, loss_centerness: 0.6434, loss: 1.7351, grad_norm: 6.0230
+2025-11-22 06:58:31,642 - mmdet - INFO - Epoch [3][100/301]	lr: 1.000e-02, eta: 0:22:15, time: 0.441, data_time: 0.015, memory: 5425, loss_cls: 0.3257, loss_bbox: 0.6920, loss_centerness: 0.6411, loss: 1.6588, grad_norm: 4.8697
+2025-11-22 06:58:53,759 - mmdet - INFO - Epoch [3][150/301]	lr: 1.000e-02, eta: 0:21:49, time: 0.442, data_time: 0.016, memory: 5425, loss_cls: 0.3230, loss_bbox: 0.6638, loss_centerness: 0.6430, loss: 1.6298, grad_norm: 4.9448
+2025-11-22 06:59:16,007 - mmdet - INFO - Epoch [3][200/301]	lr: 1.000e-02, eta: 0:21:24, time: 0.445, data_time: 0.016, memory: 5425, loss_cls: 0.3213, loss_bbox: 0.7254, loss_centerness: 0.6417, loss: 1.6884, grad_norm: 5.5301
+2025-11-22 06:59:38,263 - mmdet - INFO - Epoch [3][250/301]	lr: 1.000e-02, eta: 0:20:59, time: 0.445, data_time: 0.016, memory: 5425, loss_cls: 0.3146, loss_bbox: 0.6894, loss_centerness: 0.6404, loss: 1.6444, grad_norm: 5.3806
+2025-11-22 07:00:00,503 - mmdet - INFO - Epoch [3][300/301]	lr: 1.000e-02, eta: 0:20:34, time: 0.445, data_time: 0.015, memory: 5425, loss_cls: 0.3174, loss_bbox: 0.6766, loss_centerness: 0.6385, loss: 1.6325, grad_norm: 4.6371
+2025-11-22 07:00:01,090 - mmdet - INFO - Saving checkpoint at 3 epochs
+2025-11-22 07:00:35,754 - mmdet - INFO - Evaluating bbox...
+2025-11-22 07:00:38,396 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 07:00:38,396 - mmdet - INFO - Epoch(val) [3][301]	bbox_mAP: 0.0470, bbox_mAP_50: 0.2060, bbox_mAP_75: 0.0020, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0470, bbox_mAP_copypaste: 0.047 0.206 0.002 -1.000 0.000 0.047
+2025-11-22 07:01:03,661 - mmdet - INFO - Epoch [4][50/301]	lr: 1.000e-02, eta: 0:20:17, time: 0.505, data_time: 0.080, memory: 5425, loss_cls: 0.3103, loss_bbox: 0.6903, loss_centerness: 0.6383, loss: 1.6389, grad_norm: 5.3510
+2025-11-22 07:01:25,733 - mmdet - INFO - Epoch [4][100/301]	lr: 1.000e-02, eta: 0:19:52, time: 0.441, data_time: 0.015, memory: 5425, loss_cls: 0.3108, loss_bbox: 0.6884, loss_centerness: 0.6398, loss: 1.6390, grad_norm: 5.0801
+2025-11-22 07:01:47,888 - mmdet - INFO - Epoch [4][150/301]	lr: 1.000e-02, eta: 0:19:27, time: 0.443, data_time: 0.016, memory: 5425, loss_cls: 0.3074, loss_bbox: 0.6960, loss_centerness: 0.6382, loss: 1.6415, grad_norm: 5.2326
+2025-11-22 07:02:10,082 - mmdet - INFO - Epoch [4][200/301]	lr: 1.000e-02, eta: 0:19:03, time: 0.444, data_time: 0.016, memory: 5425, loss_cls: 0.3114, loss_bbox: 0.6497, loss_centerness: 0.6397, loss: 1.6009, grad_norm: 4.0366
+2025-11-22 07:02:32,312 - mmdet - INFO - Epoch [4][250/301]	lr: 1.000e-02, eta: 0:18:39, time: 0.445, data_time: 0.016, memory: 5425, loss_cls: 0.3031, loss_bbox: 0.6488, loss_centerness: 0.6375, loss: 1.5894, grad_norm: 4.4234
+2025-11-22 07:02:54,531 - mmdet - INFO - Epoch [4][300/301]	lr: 1.000e-02, eta: 0:18:15, time: 0.444, data_time: 0.015, memory: 5425, loss_cls: 0.3093, loss_bbox: 0.6313, loss_centerness: 0.6355, loss: 1.5761, grad_norm: 4.0365
+2025-11-22 07:02:55,123 - mmdet - INFO - Saving checkpoint at 4 epochs
+2025-11-22 07:03:29,352 - mmdet - INFO - Evaluating bbox...
+2025-11-22 07:03:31,878 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 07:03:31,879 - mmdet - INFO - Epoch(val) [4][301]	bbox_mAP: 0.0490, bbox_mAP_50: 0.2010, bbox_mAP_75: 0.0040, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0490, bbox_mAP_copypaste: 0.049 0.201 0.004 -1.000 0.000 0.049
+2025-11-22 07:03:57,190 - mmdet - INFO - Epoch [5][50/301]	lr: 1.000e-02, eta: 0:17:56, time: 0.506, data_time: 0.081, memory: 5425, loss_cls: 0.3075, loss_bbox: 0.6533, loss_centerness: 0.6367, loss: 1.5974, grad_norm: 4.5573
+2025-11-22 07:04:19,296 - mmdet - INFO - Epoch [5][100/301]	lr: 1.000e-02, eta: 0:17:32, time: 0.442, data_time: 0.015, memory: 5425, loss_cls: 0.3065, loss_bbox: 0.6255, loss_centerness: 0.6369, loss: 1.5689, grad_norm: 3.7808
+2025-11-22 07:04:41,471 - mmdet - INFO - Epoch [5][150/301]	lr: 1.000e-02, eta: 0:17:08, time: 0.443, data_time: 0.016, memory: 5425, loss_cls: 0.3057, loss_bbox: 0.6177, loss_centerness: 0.6377, loss: 1.5610, grad_norm: 3.9057
+2025-11-22 07:05:03,702 - mmdet - INFO - Epoch [5][200/301]	lr: 1.000e-02, eta: 0:16:44, time: 0.445, data_time: 0.016, memory: 5425, loss_cls: 0.3009, loss_bbox: 0.6115, loss_centerness: 0.6384, loss: 1.5508, grad_norm: 3.9801
+2025-11-22 07:05:25,919 - mmdet - INFO - Epoch [5][250/301]	lr: 1.000e-02, eta: 0:16:21, time: 0.444, data_time: 0.016, memory: 5425, loss_cls: 0.3000, loss_bbox: 0.6083, loss_centerness: 0.6382, loss: 1.5465, grad_norm: 3.4751
+2025-11-22 07:05:48,110 - mmdet - INFO - Epoch [5][300/301]	lr: 1.000e-02, eta: 0:15:57, time: 0.444, data_time: 0.015, memory: 5425, loss_cls: 0.2977, loss_bbox: 0.6258, loss_centerness: 0.6357, loss: 1.5592, grad_norm: 3.8704
+2025-11-22 07:05:48,695 - mmdet - INFO - Saving checkpoint at 5 epochs
+2025-11-22 07:06:23,829 - mmdet - INFO - Evaluating bbox...
+2025-11-22 07:06:28,326 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 07:06:28,326 - mmdet - INFO - Epoch(val) [5][301]	bbox_mAP: 0.0430, bbox_mAP_50: 0.2050, bbox_mAP_75: 0.0030, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0430, bbox_mAP_copypaste: 0.043 0.205 0.003 -1.000 0.000 0.043
+2025-11-22 07:06:53,485 - mmdet - INFO - Epoch [6][50/301]	lr: 1.000e-02, eta: 0:15:37, time: 0.503, data_time: 0.079, memory: 5425, loss_cls: 0.3056, loss_bbox: 0.6105, loss_centerness: 0.6392, loss: 1.5553, grad_norm: 3.7888
+2025-11-22 07:07:15,543 - mmdet - INFO - Epoch [6][100/301]	lr: 1.000e-02, eta: 0:15:13, time: 0.441, data_time: 0.016, memory: 5425, loss_cls: 0.2992, loss_bbox: 0.6592, loss_centerness: 0.6358, loss: 1.5942, grad_norm: 4.6799
+2025-11-22 07:07:37,660 - mmdet - INFO - Epoch [6][150/301]	lr: 1.000e-02, eta: 0:14:50, time: 0.442, data_time: 0.015, memory: 5425, loss_cls: 0.2949, loss_bbox: 0.6023, loss_centerness: 0.6379, loss: 1.5351, grad_norm: 3.6329
+2025-11-22 07:07:59,836 - mmdet - INFO - Epoch [6][200/301]	lr: 1.000e-02, eta: 0:14:26, time: 0.444, data_time: 0.016, memory: 5425, loss_cls: 0.2965, loss_bbox: 0.5909, loss_centerness: 0.6372, loss: 1.5246, grad_norm: 3.2708
+2025-11-22 07:08:22,040 - mmdet - INFO - Epoch [6][250/301]	lr: 1.000e-02, eta: 0:14:03, time: 0.444, data_time: 0.016, memory: 5425, loss_cls: 0.2975, loss_bbox: 0.5687, loss_centerness: 0.6349, loss: 1.5011, grad_norm: 2.7262
+2025-11-22 07:08:44,291 - mmdet - INFO - Epoch [6][300/301]	lr: 1.000e-02, eta: 0:13:40, time: 0.445, data_time: 0.017, memory: 5425, loss_cls: 0.3036, loss_bbox: 0.6128, loss_centerness: 0.6377, loss: 1.5541, grad_norm: 3.7615
+2025-11-22 07:08:44,874 - mmdet - INFO - Saving checkpoint at 6 epochs
+2025-11-22 07:09:19,444 - mmdet - INFO - Evaluating bbox...
+2025-11-22 07:09:22,860 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 07:09:22,860 - mmdet - INFO - Epoch(val) [6][301]	bbox_mAP: 0.0700, bbox_mAP_50: 0.2880, bbox_mAP_75: 0.0050, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0700, bbox_mAP_copypaste: 0.070 0.288 0.005 -1.000 0.000 0.070
+2025-11-22 07:09:48,061 - mmdet - INFO - Epoch [7][50/301]	lr: 1.000e-02, eta: 0:13:19, time: 0.504, data_time: 0.079, memory: 5425, loss_cls: 0.2997, loss_bbox: 0.6039, loss_centerness: 0.6370, loss: 1.5407, grad_norm: 3.7029
+2025-11-22 07:10:10,215 - mmdet - INFO - Epoch [7][100/301]	lr: 1.000e-02, eta: 0:12:55, time: 0.443, data_time: 0.017, memory: 5425, loss_cls: 0.2972, loss_bbox: 0.5892, loss_centerness: 0.6366, loss: 1.5229, grad_norm: 3.0758
+2025-11-22 07:10:32,379 - mmdet - INFO - Epoch [7][150/301]	lr: 1.000e-02, eta: 0:12:32, time: 0.443, data_time: 0.016, memory: 5425, loss_cls: 0.2934, loss_bbox: 0.6366, loss_centerness: 0.6378, loss: 1.5678, grad_norm: 4.1488
+2025-11-22 07:10:54,527 - mmdet - INFO - Epoch [7][200/301]	lr: 1.000e-02, eta: 0:12:09, time: 0.443, data_time: 0.016, memory: 5425, loss_cls: 0.3018, loss_bbox: 0.6069, loss_centerness: 0.6366, loss: 1.5453, grad_norm: 3.2204
+2025-11-22 07:11:16,724 - mmdet - INFO - Epoch [7][250/301]	lr: 1.000e-02, eta: 0:11:46, time: 0.444, data_time: 0.016, memory: 5425, loss_cls: 0.2984, loss_bbox: 0.5943, loss_centerness: 0.6349, loss: 1.5276, grad_norm: 2.9560
+2025-11-22 07:11:38,872 - mmdet - INFO - Epoch [7][300/301]	lr: 1.000e-02, eta: 0:11:23, time: 0.443, data_time: 0.015, memory: 5425, loss_cls: 0.2960, loss_bbox: 0.6033, loss_centerness: 0.6354, loss: 1.5346, grad_norm: 3.4299
+2025-11-22 07:11:39,470 - mmdet - INFO - Saving checkpoint at 7 epochs
+2025-11-22 07:12:13,896 - mmdet - INFO - Evaluating bbox...
+2025-11-22 07:12:16,002 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 07:12:16,002 - mmdet - INFO - Epoch(val) [7][301]	bbox_mAP: 0.0710, bbox_mAP_50: 0.3040, bbox_mAP_75: 0.0060, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0720, bbox_mAP_copypaste: 0.071 0.304 0.006 -1.000 0.000 0.072
+2025-11-22 07:12:41,211 - mmdet - INFO - Epoch [8][50/301]	lr: 1.000e-02, eta: 0:11:01, time: 0.504, data_time: 0.079, memory: 5425, loss_cls: 0.2962, loss_bbox: 0.5893, loss_centerness: 0.6369, loss: 1.5225, grad_norm: 3.1755
+2025-11-22 07:13:03,433 - mmdet - INFO - Epoch [8][100/301]	lr: 1.000e-02, eta: 0:10:38, time: 0.444, data_time: 0.018, memory: 5425, loss_cls: 0.2917, loss_bbox: 0.5937, loss_centerness: 0.6354, loss: 1.5208, grad_norm: 3.2969
+2025-11-22 07:13:25,615 - mmdet - INFO - Epoch [8][150/301]	lr: 1.000e-02, eta: 0:10:15, time: 0.444, data_time: 0.016, memory: 5425, loss_cls: 0.2975, loss_bbox: 0.5712, loss_centerness: 0.6365, loss: 1.5052, grad_norm: 2.7705
+2025-11-22 07:13:47,842 - mmdet - INFO - Epoch [8][200/301]	lr: 1.000e-02, eta: 0:09:52, time: 0.445, data_time: 0.016, memory: 5425, loss_cls: 0.2948, loss_bbox: 0.5626, loss_centerness: 0.6347, loss: 1.4921, grad_norm: 2.4801
+2025-11-22 07:14:10,070 - mmdet - INFO - Epoch [8][250/301]	lr: 1.000e-02, eta: 0:09:29, time: 0.445, data_time: 0.016, memory: 5425, loss_cls: 0.2955, loss_bbox: 0.5916, loss_centerness: 0.6367, loss: 1.5238, grad_norm: 2.9677
+2025-11-22 07:14:32,286 - mmdet - INFO - Epoch [8][300/301]	lr: 1.000e-02, eta: 0:09:06, time: 0.444, data_time: 0.015, memory: 5425, loss_cls: 0.2912, loss_bbox: 0.5835, loss_centerness: 0.6334, loss: 1.5082, grad_norm: 2.9621
+2025-11-22 07:14:32,890 - mmdet - INFO - Saving checkpoint at 8 epochs
+2025-11-22 07:15:07,401 - mmdet - INFO - Evaluating bbox...
+2025-11-22 07:15:09,676 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 07:15:09,677 - mmdet - INFO - Epoch(val) [8][301]	bbox_mAP: 0.0620, bbox_mAP_50: 0.2530, bbox_mAP_75: 0.0040, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0620, bbox_mAP_copypaste: 0.062 0.253 0.004 -1.000 0.000 0.062
+2025-11-22 07:15:35,032 - mmdet - INFO - Epoch [9][50/301]	lr: 1.000e-03, eta: 0:08:44, time: 0.507, data_time: 0.082, memory: 5425, loss_cls: 0.2871, loss_bbox: 0.5440, loss_centerness: 0.6330, loss: 1.4642, grad_norm: 1.8152
+2025-11-22 07:15:57,077 - mmdet - INFO - Epoch [9][100/301]	lr: 1.000e-03, eta: 0:08:21, time: 0.441, data_time: 0.015, memory: 5425, loss_cls: 0.2894, loss_bbox: 0.5450, loss_centerness: 0.6327, loss: 1.4670, grad_norm: 1.8958
+2025-11-22 07:16:19,190 - mmdet - INFO - Epoch [9][150/301]	lr: 1.000e-03, eta: 0:07:58, time: 0.442, data_time: 0.016, memory: 5425, loss_cls: 0.2830, loss_bbox: 0.5305, loss_centerness: 0.6339, loss: 1.4474, grad_norm: 1.6674
+2025-11-22 07:16:41,357 - mmdet - INFO - Epoch [9][200/301]	lr: 1.000e-03, eta: 0:07:35, time: 0.443, data_time: 0.016, memory: 5425, loss_cls: 0.2794, loss_bbox: 0.5307, loss_centerness: 0.6319, loss: 1.4420, grad_norm: 1.7843
+2025-11-22 07:17:03,581 - mmdet - INFO - Epoch [9][250/301]	lr: 1.000e-03, eta: 0:07:12, time: 0.444, data_time: 0.016, memory: 5425, loss_cls: 0.2864, loss_bbox: 0.5360, loss_centerness: 0.6338, loss: 1.4561, grad_norm: 1.7152
+2025-11-22 07:17:25,741 - mmdet - INFO - Epoch [9][300/301]	lr: 1.000e-03, eta: 0:06:49, time: 0.443, data_time: 0.015, memory: 5425, loss_cls: 0.2787, loss_bbox: 0.5249, loss_centerness: 0.6340, loss: 1.4376, grad_norm: 1.8482
+2025-11-22 07:17:26,352 - mmdet - INFO - Saving checkpoint at 9 epochs
+2025-11-22 07:18:01,058 - mmdet - INFO - Evaluating bbox...
+2025-11-22 07:18:03,110 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 07:18:03,110 - mmdet - INFO - Epoch(val) [9][301]	bbox_mAP: 0.0840, bbox_mAP_50: 0.3270, bbox_mAP_75: 0.0080, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0850, bbox_mAP_copypaste: 0.084 0.327 0.008 -1.000 0.000 0.085
+2025-11-22 07:18:28,428 - mmdet - INFO - Epoch [10][50/301]	lr: 1.000e-03, eta: 0:06:27, time: 0.506, data_time: 0.081, memory: 5425, loss_cls: 0.2780, loss_bbox: 0.5234, loss_centerness: 0.6316, loss: 1.4329, grad_norm: 1.6443
+2025-11-22 07:18:50,550 - mmdet - INFO - Epoch [10][100/301]	lr: 1.000e-03, eta: 0:06:04, time: 0.442, data_time: 0.015, memory: 5425, loss_cls: 0.2842, loss_bbox: 0.5327, loss_centerness: 0.6333, loss: 1.4502, grad_norm: 1.7248
+2025-11-22 07:19:12,727 - mmdet - INFO - Epoch [10][150/301]	lr: 1.000e-03, eta: 0:05:41, time: 0.444, data_time: 0.015, memory: 5425, loss_cls: 0.2862, loss_bbox: 0.5319, loss_centerness: 0.6329, loss: 1.4509, grad_norm: 1.6714
+2025-11-22 07:19:34,937 - mmdet - INFO - Epoch [10][200/301]	lr: 1.000e-03, eta: 0:05:18, time: 0.444, data_time: 0.016, memory: 5425, loss_cls: 0.2833, loss_bbox: 0.5352, loss_centerness: 0.6343, loss: 1.4528, grad_norm: 1.6668
+2025-11-22 07:19:57,178 - mmdet - INFO - Epoch [10][250/301]	lr: 1.000e-03, eta: 0:04:56, time: 0.445, data_time: 0.016, memory: 5425, loss_cls: 0.2797, loss_bbox: 0.5326, loss_centerness: 0.6322, loss: 1.4445, grad_norm: 1.7104
+2025-11-22 07:20:19,371 - mmdet - INFO - Epoch [10][300/301]	lr: 1.000e-03, eta: 0:04:33, time: 0.444, data_time: 0.015, memory: 5425, loss_cls: 0.2833, loss_bbox: 0.5277, loss_centerness: 0.6327, loss: 1.4438, grad_norm: 1.7772
+2025-11-22 07:20:19,958 - mmdet - INFO - Saving checkpoint at 10 epochs
+2025-11-22 07:21:17,503 - mmdet - INFO - Evaluating bbox...
+2025-11-22 07:21:19,528 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 07:21:19,528 - mmdet - INFO - Epoch(val) [10][301]	bbox_mAP: 0.0850, bbox_mAP_50: 0.3270, bbox_mAP_75: 0.0090, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0860, bbox_mAP_copypaste: 0.085 0.327 0.009 -1.000 0.000 0.086
+2025-11-22 07:22:18,722 - mmdet - INFO - Epoch [11][50/301]	lr: 1.000e-03, eta: 0:04:16, time: 1.184, data_time: 0.083, memory: 5425, loss_cls: 0.2810, loss_bbox: 0.5317, loss_centerness: 0.6330, loss: 1.4457, grad_norm: 1.7952
+2025-11-22 07:23:14,525 - mmdet - INFO - Epoch [11][100/301]	lr: 1.000e-03, eta: 0:03:58, time: 1.116, data_time: 0.017, memory: 5425, loss_cls: 0.2821, loss_bbox: 0.5291, loss_centerness: 0.6334, loss: 1.4447, grad_norm: 1.8102
+2025-11-22 07:24:09,912 - mmdet - INFO - Epoch [11][150/301]	lr: 1.000e-03, eta: 0:03:39, time: 1.108, data_time: 0.017, memory: 5425, loss_cls: 0.2785, loss_bbox: 0.5272, loss_centerness: 0.6332, loss: 1.4389, grad_norm: 1.7725
+2025-11-22 07:25:06,158 - mmdet - INFO - Epoch [11][200/301]	lr: 1.000e-03, eta: 0:03:19, time: 1.125, data_time: 0.018, memory: 5425, loss_cls: 0.2797, loss_bbox: 0.5255, loss_centerness: 0.6307, loss: 1.4360, grad_norm: 1.8017
+2025-11-22 07:26:00,065 - mmdet - INFO - Epoch [11][250/301]	lr: 1.000e-03, eta: 0:02:57, time: 1.078, data_time: 0.017, memory: 5425, loss_cls: 0.2853, loss_bbox: 0.5329, loss_centerness: 0.6326, loss: 1.4508, grad_norm: 1.7458
+2025-11-22 07:26:56,048 - mmdet - INFO - Epoch [11][300/301]	lr: 1.000e-03, eta: 0:02:35, time: 1.120, data_time: 0.016, memory: 5425, loss_cls: 0.2829, loss_bbox: 0.5324, loss_centerness: 0.6322, loss: 1.4475, grad_norm: 1.9459
+2025-11-22 07:26:57,214 - mmdet - INFO - Saving checkpoint at 11 epochs
+2025-11-22 07:28:15,232 - mmdet - INFO - Evaluating bbox...
+2025-11-22 07:28:17,453 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 07:28:17,453 - mmdet - INFO - Epoch(val) [11][301]	bbox_mAP: 0.0850, bbox_mAP_50: 0.3300, bbox_mAP_75: 0.0090, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0860, bbox_mAP_copypaste: 0.085 0.330 0.009 -1.000 0.000 0.086
+2025-11-22 07:29:17,220 - mmdet - INFO - Epoch [12][50/301]	lr: 1.000e-04, eta: 0:02:11, time: 1.195, data_time: 0.090, memory: 5425, loss_cls: 0.2806, loss_bbox: 0.5236, loss_centerness: 0.6316, loss: 1.4359, grad_norm: 1.7652
+2025-11-22 07:30:13,121 - mmdet - INFO - Epoch [12][100/301]	lr: 1.000e-04, eta: 0:01:47, time: 1.118, data_time: 0.017, memory: 5425, loss_cls: 0.2782, loss_bbox: 0.5222, loss_centerness: 0.6324, loss: 1.4328, grad_norm: 1.6478
+2025-11-22 07:31:09,281 - mmdet - INFO - Epoch [12][150/301]	lr: 1.000e-04, eta: 0:01:21, time: 1.123, data_time: 0.017, memory: 5425, loss_cls: 0.2832, loss_bbox: 0.5294, loss_centerness: 0.6327, loss: 1.4452, grad_norm: 1.6137
+2025-11-22 07:32:03,105 - mmdet - INFO - Epoch [12][200/301]	lr: 1.000e-04, eta: 0:00:55, time: 1.076, data_time: 0.017, memory: 5425, loss_cls: 0.2806, loss_bbox: 0.5253, loss_centerness: 0.6344, loss: 1.4403, grad_norm: 1.7355
+2025-11-22 07:32:58,816 - mmdet - INFO - Epoch [12][250/301]	lr: 1.000e-04, eta: 0:00:28, time: 1.114, data_time: 0.016, memory: 5425, loss_cls: 0.2807, loss_bbox: 0.5284, loss_centerness: 0.6320, loss: 1.4411, grad_norm: 1.7721
+2025-11-22 07:33:54,925 - mmdet - INFO - Epoch [12][300/301]	lr: 1.000e-04, eta: 0:00:00, time: 1.122, data_time: 0.016, memory: 5425, loss_cls: 0.2760, loss_bbox: 0.5187, loss_centerness: 0.6303, loss: 1.4249, grad_norm: 1.6078
+2025-11-22 07:33:56,292 - mmdet - INFO - Saving checkpoint at 12 epochs
+2025-11-22 07:35:14,816 - mmdet - INFO - Evaluating bbox...
+2025-11-22 07:35:17,036 - mmdet - INFO - Exp name: fcos_RSNA.py
+2025-11-22 07:35:17,036 - mmdet - INFO - Epoch(val) [12][301]	bbox_mAP: 0.0890, bbox_mAP_50: 0.3390, bbox_mAP_75: 0.0100, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0890, bbox_mAP_copypaste: 0.089 0.339 0.010 -1.000 0.000 0.089

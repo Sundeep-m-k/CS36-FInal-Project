@@ -297,3 +297,30 @@ gpu_ids = range(0, 1)
 2025-11-20 19:57:32,537 - mmdet - INFO - Epoch [3][50/301]	lr: 5.000e-01, eta: 0:31:54, time: 0.718, data_time: 0.079, memory: 6431, loss_rpn_cls: 0.0342, loss_rpn_bbox: 0.0095, loss_cls: 0.1266, acc: 95.7869, loss_bbox: 0.1465, loss: 0.3167
 2025-11-20 19:58:05,313 - mmdet - INFO - Epoch [3][100/301]	lr: 5.000e-01, eta: 0:31:23, time: 0.656, data_time: 0.017, memory: 6431, loss_rpn_cls: 0.0328, loss_rpn_bbox: 0.0100, loss_cls: 0.1279, acc: 95.6406, loss_bbox: 0.1513, loss: 0.3221
 2025-11-20 19:58:38,211 - mmdet - INFO - Epoch [3][150/301]	lr: 5.000e-01, eta: 0:30:53, time: 0.658, data_time: 0.018, memory: 6431, loss_rpn_cls: 0.0338, loss_rpn_bbox: 0.0104, loss_cls: 0.1309, acc: 95.5110, loss_bbox: 0.1596, loss: 0.3347
+2025-11-20 19:59:10,924 - mmdet - INFO - Epoch [3][200/301]	lr: 5.000e-01, eta: 0:30:22, time: 0.654, data_time: 0.017, memory: 6431, loss_rpn_cls: 0.0331, loss_rpn_bbox: 0.0095, loss_cls: 0.1269, acc: 95.5095, loss_bbox: 0.1566, loss: 0.3262
+2025-11-20 19:59:43,824 - mmdet - INFO - Epoch [3][250/301]	lr: 5.000e-01, eta: 0:29:51, time: 0.658, data_time: 0.017, memory: 6431, loss_rpn_cls: 0.0315, loss_rpn_bbox: 0.0098, loss_cls: 0.1259, acc: 95.6460, loss_bbox: 0.1534, loss: 0.3205
+2025-11-20 20:00:16,890 - mmdet - INFO - Epoch [3][300/301]	lr: 5.000e-01, eta: 0:29:20, time: 0.661, data_time: 0.017, memory: 6431, loss_rpn_cls: 0.0317, loss_rpn_bbox: 0.0098, loss_cls: 0.1285, acc: 95.5552, loss_bbox: 0.1535, loss: 0.3236
+2025-11-20 20:00:17,585 - mmdet - INFO - Saving checkpoint at 3 epochs
+2025-11-20 20:00:48,606 - mmdet - INFO - Evaluating bbox...
+2025-11-20 20:00:50,501 - mmdet - INFO - Exp name: faster_RSNA.py
+2025-11-20 20:00:50,502 - mmdet - INFO - Epoch(val) [3][301]	bbox_mAP: 0.0470, bbox_mAP_50: 0.2040, bbox_mAP_75: 0.0040, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0480, bbox_mAP_copypaste: 0.047 0.204 0.004 -1.000 0.000 0.048
+2025-11-20 20:01:26,807 - mmdet - INFO - Epoch [4][50/301]	lr: 5.000e-01, eta: 0:28:55, time: 0.724, data_time: 0.079, memory: 6431, loss_rpn_cls: 0.0322, loss_rpn_bbox: 0.0093, loss_cls: 0.1282, acc: 95.5515, loss_bbox: 0.1556, loss: 0.3254
+2025-11-20 20:01:59,816 - mmdet - INFO - Epoch [4][100/301]	lr: 5.000e-01, eta: 0:28:24, time: 0.660, data_time: 0.017, memory: 6431, loss_rpn_cls: 0.0335, loss_rpn_bbox: 0.0101, loss_cls: 0.1307, acc: 95.3689, loss_bbox: 0.1593, loss: 0.3336
+2025-11-20 20:02:33,167 - mmdet - INFO - Epoch [4][150/301]	lr: 5.000e-01, eta: 0:27:53, time: 0.667, data_time: 0.017, memory: 6431, loss_rpn_cls: 0.0304, loss_rpn_bbox: 0.0093, loss_cls: 0.1281, acc: 95.6416, loss_bbox: 0.1514, loss: 0.3193
+2025-11-20 20:03:06,229 - mmdet - INFO - Epoch [4][200/301]	lr: 5.000e-01, eta: 0:27:21, time: 0.661, data_time: 0.017, memory: 6431, loss_rpn_cls: 0.0328, loss_rpn_bbox: 0.0091, loss_cls: 0.1268, acc: 95.4851, loss_bbox: 0.1546, loss: 0.3232
+2025-11-20 20:03:39,163 - mmdet - INFO - Epoch [4][250/301]	lr: 5.000e-01, eta: 0:26:49, time: 0.659, data_time: 0.017, memory: 6431, loss_rpn_cls: 0.0300, loss_rpn_bbox: 0.0093, loss_cls: 0.1242, acc: 95.6238, loss_bbox: 0.1504, loss: 0.3139
+2025-11-20 20:04:11,850 - mmdet - INFO - Epoch [4][300/301]	lr: 5.000e-01, eta: 0:26:16, time: 0.654, data_time: 0.016, memory: 6431, loss_rpn_cls: 0.0328, loss_rpn_bbox: 0.0099, loss_cls: 0.1227, acc: 95.6140, loss_bbox: 0.1510, loss: 0.3165
+2025-11-20 20:04:12,576 - mmdet - INFO - Saving checkpoint at 4 epochs
+2025-11-20 20:04:43,857 - mmdet - INFO - Evaluating bbox...
+2025-11-20 20:04:45,427 - mmdet - INFO - Exp name: faster_RSNA.py
+2025-11-20 20:04:45,428 - mmdet - INFO - Epoch(val) [4][301]	bbox_mAP: 0.0400, bbox_mAP_50: 0.1860, bbox_mAP_75: 0.0020, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0410, bbox_mAP_copypaste: 0.040 0.186 0.002 -1.000 0.000 0.041
+2025-11-20 20:05:21,986 - mmdet - INFO - Epoch [5][50/301]	lr: 5.000e-01, eta: 0:25:48, time: 0.729, data_time: 0.079, memory: 6431, loss_rpn_cls: 0.0299, loss_rpn_bbox: 0.0095, loss_cls: 0.1305, acc: 95.4592, loss_bbox: 0.1562, loss: 0.3261
+2025-11-20 20:05:55,110 - mmdet - INFO - Epoch [5][100/301]	lr: 5.000e-01, eta: 0:25:16, time: 0.662, data_time: 0.016, memory: 6431, loss_rpn_cls: 0.0312, loss_rpn_bbox: 0.0095, loss_cls: 0.1160, acc: 96.0298, loss_bbox: 0.1358, loss: 0.2924
+2025-11-20 20:06:28,073 - mmdet - INFO - Epoch [5][150/301]	lr: 5.000e-01, eta: 0:24:43, time: 0.659, data_time: 0.017, memory: 6431, loss_rpn_cls: 0.0311, loss_rpn_bbox: 0.0098, loss_cls: 0.1204, acc: 95.7458, loss_bbox: 0.1471, loss: 0.3084
+2025-11-20 20:07:01,424 - mmdet - INFO - Epoch [5][200/301]	lr: 5.000e-01, eta: 0:24:11, time: 0.667, data_time: 0.017, memory: 6431, loss_rpn_cls: 0.0316, loss_rpn_bbox: 0.0098, loss_cls: 0.1239, acc: 95.4995, loss_bbox: 0.1511, loss: 0.3164
+2025-11-20 20:07:34,705 - mmdet - INFO - Epoch [5][250/301]	lr: 5.000e-01, eta: 0:23:39, time: 0.666, data_time: 0.017, memory: 6431, loss_rpn_cls: 0.0315, loss_rpn_bbox: 0.0098, loss_cls: 0.1237, acc: 95.6111, loss_bbox: 0.1529, loss: 0.3180
+2025-11-20 20:08:08,121 - mmdet - INFO - Epoch [5][300/301]	lr: 5.000e-01, eta: 0:23:07, time: 0.668, data_time: 0.016, memory: 6431, loss_rpn_cls: 0.0304, loss_rpn_bbox: 0.0090, loss_cls: 0.1258, acc: 95.6292, loss_bbox: 0.1516, loss: 0.3168
+2025-11-20 20:08:08,834 - mmdet - INFO - Saving checkpoint at 5 epochs
+2025-11-20 20:08:40,069 - mmdet - INFO - Evaluating bbox...
+2025-11-20 20:08:41,736 - mmdet - INFO - Exp name: faster_RSNA.py
+2025-11-20 20:08:41,736 - mmdet - INFO - Epoch(val) [5][301]	bbox_mAP: 0.0480, bbox_mAP_50: 0.2070, bbox_mAP_75: 0.0040, bbox_mAP_s: -1.0000, bbox_mAP_m: 0.0000, bbox_mAP_l: 0.0480, bbox_mAP_copypaste: 0.048 0.207 0.004 -1.000 0.000 0.048
