@@ -26,9 +26,9 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         if args.generate_pseudo_bbox: 
             assert not is_training and args.partial != 0, ' ERROR: The data scale must be specified.'
             if args.dataset_file == 'coco':
-                self.coco = COCO('/YOURPATH/data/CXR/cocoAnnWBF_2-3box/100p/instances_trainBox.json')
+                self.coco = COCO('/home/sundeep/Point-Beyond-Class/data/cxr/cocoAnnWBF_2-3box/100p/instances_trainBox.json')
             elif args.dataset_file == 'cxr8':
-                self.coco = COCO('/YOURPATH/data/CXR/ClsAll8_cocoAnnWBF/100p/instances_trainBox.json')
+                self.coco = COCO('/home/sundeep/Point-Beyond-Class/data/cxr/ClsAll8_cocoAnnWBF/100p/instances_trainBox.json')
             else:
                 pass
             self.ids = list(self.coco.imgs.keys())
@@ -41,9 +41,9 @@ class CocoDetection(torchvision.datasets.CocoDetection):
             if args.train_with_unlabel_imgs and image_set == 'train':
                 print('=====> training with unlabeled imgs (point annotation)')
                 if args.dataset_file == 'coco':
-                    all_box_anns = '/YOURPATH/data/CXR/cocoAnnWBF_2-3box/100p/instances_trainBox.json'
+                    all_box_anns = '/home/sundeep/Point-Beyond-Class/data/cxr/cocoAnnWBF_2-3box/100p/instances_trainBox.json'
                 elif args.dataset_file == 'cxr8':
-                    all_box_anns = '/YOURPATH/data/CXR/ClsAll8_cocoAnnWBF/100p/instances_trainBox.json'
+                    all_box_anns = '/home/sundeep/Point-Beyond-Class/data/cxr/ClsAll8_cocoAnnWBF/100p/instances_trainBox.json'
                 else:
                     pass
                 self.all_anns = COCO(all_box_anns)
@@ -266,8 +266,8 @@ def build(image_set, args):
     assert root.exists(), f'provided COCO path {root} does not exist'
 
     PATHS = {
-        "train": ('/YOURPATH/data/CXR/VinBigDataTrain_jpg', root/ 'instances_trainBox.json'),
-        "val": ('/YOURPATH/data/CXR/VinBigDataTrain_jpg', root/ '../instances_val.json'),
+        "train": ('/home/sundeep/Point-Beyond-Class/data/cxr/VinBigDataTrain_jpg', root/ 'instances_trainBox.json'),
+        "val": ('/home/sundeep/Point-Beyond-Class/data/cxr/VinBigDataTrain_jpg', root/ '../instances_val.json'),
     }
     img_folder, ann_file = PATHS[image_set]
     print('dataset path: \n', ann_file)

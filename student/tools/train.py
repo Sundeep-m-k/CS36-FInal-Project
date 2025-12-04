@@ -7,9 +7,77 @@ import warnings
 
 import mmcv
 import torch
+import pycocotools
+from pycocotools.coco import COCO
+
 from mmcv import Config, DictAction
 from mmcv.runner import get_dist_info, init_dist
 from mmcv.utils import get_git_hash
+
+# --------------------------------------------------------------------
+# Patches for pycocotools compatibility with mmdet 2.8.0
+# --------------------------------------------------------------------
+
+# 1) Some pycocotools builds don't define __version__,
+#    but mmdet/datasets/coco.py asserts on it.
+if not hasattr(pycocotools, "__version__"):
+    pycocotools.__version__ = "12.0.3"
+
+# 2) Add mmpycocotools-style helpers expected by mmdet:
+#    - get_cat_ids  -> wraps / emulates getCatIds()
+#    - get_img_ids  -> wraps getImgIds()
+#    - get_ann_ids  -> wraps getAnnIds()
+#    - load_imgs    -> wraps loadImgs()
+#    - load_anns    -> wraps loadAnns()
+if not hasattr(COCO, "get_cat_ids"):
+    def get_cat_ids(self, cat_ids=None, cat_names=None, sup_names=None):
+        cat_ids = cat_ids or []
+        cat_names = cat_names or []
+        sup_names = sup_names or []
+
+        # If nothing is specified, return all category IDs
+        if not cat_ids and not cat_names and not sup_names:
+            return list(self.cats.keys())
+
+        cats = list(self.cats.values())
+
+        if cat_ids:
+            cats = [c for c in cats if c.get('id') in cat_ids]
+        if cat_names:
+            cats = [c for c in cats if c.get('name') in cat_names]
+        if sup_names:
+            # Only filter by supercategory if the key exists
+            cats = [c for c in cats if c.get('supercategory') in sup_names]
+
+        return [c['id'] for c in cats]
+
+    COCO.get_cat_ids = get_cat_ids
+
+if not hasattr(COCO, "get_img_ids"):
+    def get_img_ids(self, img_ids=None):
+        # mmdet usually calls get_img_ids() with no args -> all images
+        return self.getImgIds(imgIds=img_ids)
+    COCO.get_img_ids = get_img_ids
+
+if not hasattr(COCO, "get_ann_ids"):
+    def get_ann_ids(self, img_ids=None, cat_ids=None, area_rng=None, iscrowd=None):
+        return self.getAnnIds(
+            imgIds=img_ids,
+            catIds=cat_ids,
+            areaRng=area_rng,
+            iscrowd=iscrowd
+        )
+    COCO.get_ann_ids = get_ann_ids
+
+if not hasattr(COCO, "load_imgs"):
+    def load_imgs(self, img_ids=None):
+        return self.loadImgs(img_ids)
+    COCO.load_imgs = load_imgs
+
+if not hasattr(COCO, "load_anns"):
+    def load_anns(self, ann_ids=None):
+        return self.loadAnns(ann_ids)
+    COCO.load_anns = load_anns
 
 from mmdet import __version__
 from mmdet.apis import set_random_seed, train_detector
@@ -33,13 +101,13 @@ def parse_args():
         '--gpus',
         type=int,
         help='number of gpus to use '
-        '(only applicable to non-distributed training)')
+             '(only applicable to non-distributed training)')
     group_gpus.add_argument(
         '--gpu-ids',
         type=int,
         nargs='+',
         help='ids of gpus to use '
-        '(only applicable to non-distributed training)')
+             '(only applicable to non-distributed training)')
     parser.add_argument('--seed', type=int, default=None, help='random seed')
     parser.add_argument(
         '--deterministic',
@@ -50,18 +118,18 @@ def parse_args():
         nargs='+',
         action=DictAction,
         help='override some settings in the used config, the key-value pair '
-        'in xxx=yyy format will be merged into config file (deprecate), '
-        'change to --cfg-options instead.')
+             'in xxx=yyy format will be merged into config file (deprecate), '
+             'change to --cfg-options instead.')
     parser.add_argument(
         '--cfg-options',
         nargs='+',
         action=DictAction,
         help='override some settings in the used config, the key-value pair '
-        'in xxx=yyy format will be merged into config file. If the value to '
-        'be overwritten is a list, it should be like key="[a,b]" or key=a,b '
-        'It also allows nested list/tuple values, e.g. key="[(a,b),(c,d)]" '
-        'Note that the quotation marks are necessary and that no white space '
-        'is allowed.')
+             'in xxx=yyy format will be merged into config file. If the value to '
+             'be overwritten is a list, it should be like key=\"[a,b]\" or key=a,b '
+             'It also allows nested list/tuple values, e.g. key=\"[(a,b),(c,d)]\" '
+             'Note that the quotation marks are necessary and that no white space '
+             'is allowed.')
     parser.add_argument(
         '--launcher',
         choices=['none', 'pytorch', 'slurm', 'mpi'],

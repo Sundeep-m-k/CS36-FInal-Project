@@ -22,7 +22,7 @@ torch.manual_seed(seed)
 np.random.seed(seed)
 random.seed(seed)
 
-raw_csv = './train.csv'
+raw_csv = '/home/sundeep/Point-Beyond-Class/data/cxr/train.csv'
 # 0 - Aortic enlargement
 # 1 - Atelectasis
 # 2 - Calcification
@@ -84,8 +84,8 @@ print('normal imgs: ', len(normals_imgs))
 
 
 ## new csv and remapping file
-row_imgname_to_00000_jpgname = './ClsAll8_row_imgname_to_00000_jpgname.txt'
-det_csv = './ClsAll8_detetionWBF.csv'
+row_imgname_to_00000_jpgname = '/home/sundeep/Point-Beyond-Class/data/cxr/ClsAll8_row_imgname_to_00000_jpgname.txt'
+det_csv = '/home/sundeep/Point-Beyond-Class/data/cxr/ClsAll8_detetionWBF.csv'
 abnormal_imgs = list(set(all_imgs)^set(normals_imgs))
 random.shuffle(abnormal_imgs)
 

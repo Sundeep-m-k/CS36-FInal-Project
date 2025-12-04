@@ -58,3 +58,17 @@
 #     --deterministic \
 #     --work-dir /STU_out/models/mmdet-CXR8/exp2_faster512wBB_$[partial]p__train_LableBox_PseudoBox__exp4_stage1_data$[partial]p_1pts_Erase0_jit005_unlabelLossL2Loss50_2-3box_Load2ptsconsPth_new >  \
 #                  /STU_out/logs/mmdet-CXR8/exp2_faster512wBB_$[partial]p__train_LableBox_PseudoBox__exp4_stage1_data$[partial]p_1pts_Erase0_jit005_unlabelLossL2Loss50_2-3box_Load2ptsconsPth_new.log 2>&1
+
+# ---------------------------------------------------------------------------------------------------------------------------------------
+# Reliable 50p run (uses absolute conda env python so non-interactive shells use correct env)
+# Adjust `partial` or paths if needed. This writes models/logs into the project's `Output/outfiles` directory.
+partial=50
+source ~/.bashrc || true
+conda activate pbc_paper || true
+/home/sundeep/miniconda3/envs/pbc_paper/bin/python /home/sundeep/Point-Beyond-Class/tools/train.py \
+	/home/sundeep/Point-Beyond-Class/student/configs/fcos/fcos_CXR8.py \
+	--seed 42 \
+	--deterministic \
+	--work-dir /home/sundeep/Point-Beyond-Class/Output/outfiles/models/mmdet-CXR8/exp1_fcos512wBB_${partial}p_onlyBox > \
+	/home/sundeep/Point-Beyond-Class/Output/outfiles/logs/mmdet-CXR8/exp1_fcos512wBB_${partial}p_onlyBox.log 2>&1
+

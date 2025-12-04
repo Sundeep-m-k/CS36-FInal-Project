@@ -20,6 +20,62 @@ from .transformer import build_transformer
 from .point_encoder import build_point_encoder
 from .label_encoder import build_label_encoder
 from .point_criterion import PointCriterion
+from .position_encoding import build_position_encoding
+
+
+
+# Helper joiner for torchvision backbones (returns features list and position encodings)
+class TVJoiner(torch.nn.Module):
+    def __init__(self, backbone_module, position_embedding):
+        super().__init__()
+        self.backbone = backbone_module
+        self.position_embedding = position_embedding
+        # num_channels should be set by caller on the returned object
+
+    def forward(self, tensor_list):
+        """Supports NestedTensor and plain Tensor inputs. Returns (features_list, pos_list)"""
+        if isinstance(tensor_list, NestedTensor):
+            x = tensor_list.tensors
+            # try to use a features extractor if available, otherwise call model
+            if hasattr(self.backbone, 'forward_features'):
+                feat = self.backbone.forward_features(x)
+            else:
+                feat = self.backbone(x)
+
+            # Normalize to dict of single feature
+            if isinstance(feat, torch.Tensor):
+                xs = {'0': feat}
+            elif isinstance(feat, dict):
+                xs = feat
+            else:
+                # fallback: try to iterate
+                try:
+                    xs = {str(i): t for i, t in enumerate(feat)}
+                except Exception:
+                    raise RuntimeError('Unsupported backbone output type')
+
+            out = []
+            pos = []
+            for name, x in xs.items():
+                m = tensor_list.mask
+                assert m is not None
+                mask = F.interpolate(m[None].float(), size=x.shape[-2:]).to(torch.bool)[0]
+                nt = NestedTensor(x, mask)
+                out.append(nt)
+                pos.append(self.position_embedding(nt).to(x.dtype))
+            return out, pos
+        else:
+            # non-nested: return list of tensors and None for pos
+            if hasattr(self.backbone, 'forward_features'):
+                feat = self.backbone.forward_features(tensor_list)
+            else:
+                feat = self.backbone(tensor_list)
+            if isinstance(feat, torch.Tensor):
+                return [feat], [None]
+            elif isinstance(feat, dict):
+                return list(feat.values()), [None] * len(feat)
+            else:
+                return list(feat), [None] * len(feat)
 
 
 class DETR(nn.Module):
@@ -340,6 +396,50 @@ class MLP(nn.Module):
         return x
 
 
+    def build_swin_backbone(args):
+        """Build Swin Transformer backbone (pretrained) and wrap with TVJoiner."""
+        # import inside function to avoid hard dependency when not used
+        from torchvision.models.swin_transformer import swin_t, swin_s, swin_b
+        from torchvision.models import Swin_T_Weights, Swin_S_Weights, Swin_B_Weights
+
+        if args.backbone == 'swin_tiny':
+            tv_model = swin_t(weights=Swin_T_Weights.IMAGENET1K_V1)
+            num_channels = 768
+        elif args.backbone == 'swin_small':
+            tv_model = swin_s(weights=Swin_S_Weights.IMAGENET1K_V1)
+            num_channels = 768
+        elif args.backbone == 'swin_base':
+            tv_model = swin_b(weights=Swin_B_Weights.IMAGENET1K_V1)
+            num_channels = 1024
+        else:
+            raise ValueError(f"Unknown Swin backbone: {args.backbone}")
+
+        position_embedding = build_position_encoding(args)
+        joiner = TVJoiner(tv_model, position_embedding)
+        joiner.num_channels = num_channels
+        return joiner
+
+
+    def build_vit_backbone(args):
+        """Build Vision Transformer backbone (pretrained) and wrap with TVJoiner."""
+        from torchvision.models.vision_transformer import vit_b_16, vit_l_16
+        from torchvision.models import ViT_B_16_Weights, ViT_L_16_Weights
+
+        if args.backbone == 'vit_base':
+            tv_model = vit_b_16(weights=ViT_B_16_Weights.IMAGENET1K_V1)
+            num_channels = 768
+        elif args.backbone == 'vit_large':
+            tv_model = vit_l_16(weights=ViT_L_16_Weights.IMAGENET1K_V1)
+            num_channels = 1024
+        else:
+            raise ValueError(f"Unknown ViT backbone: {args.backbone}")
+
+        position_embedding = build_position_encoding(args)
+        joiner = TVJoiner(tv_model, position_embedding)
+        joiner.num_channels = num_channels
+        return joiner
+
+
 def build(args):
     num_classes = 3 if args.dataset_file != 'coco' else 16 # CXR: 14+2 RSNA: 1+2
 
@@ -348,7 +448,13 @@ def build(args):
         num_classes = 250
     device = torch.device(args.device)
 
-    backbone = build_backbone(args)
+    # support torchvision Swin/ViT pretrained models wrapped into TVJoiner
+    if hasattr(args, 'backbone') and isinstance(args.backbone, str) and args.backbone.startswith('swin_'):
+        backbone = build_swin_backbone(args)
+    elif hasattr(args, 'backbone') and isinstance(args.backbone, str) and args.backbone.startswith('vit_'):
+        backbone = build_vit_backbone(args)
+    else:
+        backbone = build_backbone(args)
 
     transformer = build_transformer(args)
 

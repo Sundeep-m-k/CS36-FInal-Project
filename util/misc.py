@@ -24,9 +24,21 @@ from torch import Tensor
 
 # needed due to empty tensor bug in pytorch and torchvision 0.5
 import torchvision
-if float(torchvision.__version__[:3]) < 0.7:
-    from torchvision.ops import _new_empty_tensor
-    from torchvision.ops.misc import _output_size
+
+# Try to import private helpers from torchvision (they exist in some versions).
+# If they are missing, fall back to safe alternatives below.
+try:
+    from torchvision.ops import _new_empty_tensor  # type: ignore
+    from torchvision.ops.misc import _output_size  # type: ignore
+    _TORCHVISION_HAS_OLD_OPS = True
+except Exception:
+    _TORCHVISION_HAS_OLD_OPS = False
+
+# Prefer the public misc.interpolate when available
+try:
+    _TORCHVISION_MISC_INTERPOLATE = torchvision.ops.misc.interpolate
+except Exception:
+    _TORCHVISION_MISC_INTERPOLATE = None
 
 
 class SmoothedValue(object):
@@ -466,14 +478,44 @@ def interpolate(input, size=None, scale_factor=None, mode="nearest", align_corne
     This will eventually be supported natively by PyTorch, and this
     class can go away.
     """
-    if float(torchvision.__version__[:3]) < 0.7:
-        if input.numel() > 0:
-            return torch.nn.functional.interpolate(
-                input, size, scale_factor, mode, align_corners
-            )
+    # Prefer torchvision.ops.misc.interpolate when available (handles empty tensors)
+    if _TORCHVISION_MISC_INTERPOLATE is not None:
+        try:
+            return _TORCHVISION_MISC_INTERPOLATE(input, size, scale_factor, mode, align_corners)
+        except Exception:
+            # fall back to safe behavior below
+            pass
 
-        output_shape = _output_size(2, input, size, scale_factor)
-        output_shape = list(input.shape[:-2]) + list(output_shape)
-        return _new_empty_tensor(input, output_shape)
+    # Fallback behavior: use functional.interpolate for non-empty tensors
+    if input.numel() > 0:
+        return torch.nn.functional.interpolate(
+            input, size=size, scale_factor=scale_factor, mode=mode, align_corners=align_corners
+        )
+
+    # Handle empty tensors: try to use legacy helpers if present
+    if _TORCHVISION_HAS_OLD_OPS:
+        try:
+            output_shape = _output_size(2, input, size, scale_factor)
+            output_shape = list(input.shape[:-2]) + list(output_shape)
+            return _new_empty_tensor(input, output_shape)
+        except Exception:
+            pass
+
+    # Generic fallback: construct an empty tensor with the expected output spatial size
+    if size is not None:
+        if isinstance(size, (list, tuple)):
+            out_h, out_w = size
+        else:
+            out_h = out_w = size
+    elif scale_factor is not None:
+        if isinstance(scale_factor, (list, tuple)):
+            sf_h, sf_w = scale_factor
+        else:
+            sf_h = sf_w = scale_factor
+        out_h = int(input.shape[-2] * sf_h)
+        out_w = int(input.shape[-1] * sf_w)
     else:
-        return torchvision.ops.misc.interpolate(input, size, scale_factor, mode, align_corners)
+        out_h, out_w = input.shape[-2], input.shape[-1]
+
+    output_shape = list(input.shape[:-2]) + [out_h, out_w]
+    return input.new_empty(output_shape)

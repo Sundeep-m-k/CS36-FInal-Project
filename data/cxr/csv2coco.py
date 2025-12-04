@@ -158,10 +158,10 @@ if __name__ == '__main__':
     # ----------------------------------------------------------
     # csv_file = "./detetion_1rad.csv"
     # csv_file = "./detetionWBF.csv"
-    csv_file = "./ClsAll8_detetionWBF.csv"
-    image_dir = "/YOURPATH/data/CXR/VinBigDataTrain_jpg/"
-    partial = 20  
-    saved_coco_path = "/YOURPATH/data/CXR/ClsAll8_cocoAnnWBF/%sp/"%(str(partial))
+    csv_file = "/home/sundeep/Point-Beyond-Class/data/cxr/ClsAll8_detetionWBF.csv"
+    image_dir = "/home/sundeep/Point-Beyond-Class/data/cxr/VinBigDataTrain_jpg/"
+    partial = 100
+    saved_coco_path = "/home/sundeep/Point-Beyond-Class/data/cxr/ClsAll8_cocoAnnWBF/%sp/"%(str(partial))
     
     total_csv_annotations = {}
     annotations = pd.read_csv(csv_file,header=None).values

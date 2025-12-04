@@ -80,4 +80,17 @@ Thumbs.db
 # JUPYTER NOTEBOOK OUTPUTS
 # ============================
 *.nbconvert/
-student/mmdetection/
+student/mmdetection/# === Large model weights / checkpoints (do NOT track) ===
+*.pth
+*.pt
+*.ckpt
+*.bin
+*.pth.tar
+
+# Optional: generic large artifacts
+checkpoints/
+Output/models/
+
+# TensorBoard etc.
+events.out.tfevents.*
+runs/
