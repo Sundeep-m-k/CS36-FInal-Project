@@ -154,7 +154,7 @@ If this environment is NOT activated:
 
 ---
 
-## 6. Backbone Results on RSNA + VinDR-CXR
+## 6. Backbone Results VinDR-CXR
 
 ### VinDR-CXR (50% partial)
 
@@ -168,16 +168,6 @@ Why Swin wins:
 - Local window attention suits radiology lesions  
 - More stable under consistency losses  
 
-### RSNA Results
-
-Ranking:
-1. Swin-Tiny  
-2. ResNet-50  
-3. ViT-Base  
-
-Reason:
-- RSNA labels are noisier; Swin handles noise better  
-- ViT is unstable with sparse point supervision  
 
 
 ---
